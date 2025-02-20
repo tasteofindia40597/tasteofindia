@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Taste of India - Digitale Speisekarte</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+
+        :root {
+            --primary: #8B0000;
+            --secondary: #FFA000;
+            --accent: #FF4081;
+            --background: #FFF8E7;
+            --card: #FFFFFF;
+            --text: #2C1810;
+            --border: #E6D5C5;
+        }
+
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    header {
+        position: relative;
+        width: 100%;
+        background: linear-gradient(135deg, var(--primary), #4A0404);
+        margin-top: 0;
+        z-index: 98;
+    }
+
+        body {
+        margin: 0;  /* Reset body margin */
+        padding: 0;  /* Reset body padding */
+        background-color: var(--background);
+        color: var(--text);
+        font-family: 'Poppins', sans-serif;
+        line-height: 1.6;
+    }
+
+        .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0.5rem 1rem;  /* Adjust padding as needed */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        height: 70px;
+        z-index: 97;
+    }
+
+        .logo {
+            color: var(--card);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .language-selector {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .language-selector:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .language-selector option {
+            background: var(--primary);
+            color: white;
+        }
+
+        .container {
+            padding: 1rem 1rem;  /* Increase horizontal padding */
+            max-width: 1400px;   /* Optional: to prevent stretching too wide */
+            margin: 0 auto;      /* Center the container */
+        }
+
+        .hamburger-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .hamburger-line {
+            width: 25px;
+            height: 2px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar {
+        width: 85%;
+        max-width: 300px;
+        position: fixed;
+        top: 0;
+        left: -100%;
+        height: 100%;
+        background: var(--card);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 999;  /* Higher z-index to appear in front */
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        transform: translateX(-100%);
+        will-change: transform;
+    }
+        .sidebar-header {
+        height: 70px;
+        background: #8B0000;  /* This matches the header color */
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;  /* Increased z-index */
+    }
+        .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 100px;
+        margin-top: 0;
+        position: relative;
+        z-index: 99;  /* Add this z-index */
+    }
+
+        .sidebar.active {
+        transform: translateX(0);
+        left: 0;
+    }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 98;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        .category-link {
+                display: block;
+                padding: 0.75rem 1rem;
+                margin: 0.25rem 0;
+                background: transparent;
+                border-radius: 8px;
+                text-decoration: none;
+                color: var(--text);
+                font-weight: 500;
+                transition: all 0.3s ease;
+                border-left: 3px solid transparent;
+                font-size: 0.95rem;
+            }
+
+            .category-link:hover, 
+            .category-link:active,
+            .category-link.active {
+                background: var(--background);
+                border-left-color: var(--primary);
+                color: var(--primary);
+            }
+
+        .category-link:hover, .category-link.active {
+            background: var(--background);
+            border-left-color: var(--primary);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .menu-content {
+            flex: 1;
+        }
+
+        .menu-section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.25rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--secondary);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-card {
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            margin-bottom: 0.5rem;  /* Add bottom margin */
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.75rem;  /* Increase from 1.5rem to 1.75rem */
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .dish-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-right: 1rem;
+            line-height: 1.3;
+        }
+
+        .dish-price {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.25rem;
+            background: var(--background);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .dish-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .dietary-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .dietary-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.8;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ddd;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .favorite-btn:hover {
+            background: rgba(255,64,129,0.1);
+        }
+
+        .favorite-btn.active {
+            color: var(--accent);
+        }
+
+        .chat-assistant {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(139,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .chat-assistant:hover {
+            transform: scale(1.1);
+            background: #A00000;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+            padding-top: 1rem;
+        }
+
+            .sidebar {
+                width: 260px;
+            }
+
+            .menu-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 2.5rem;  /* Increase from 2rem to 2.5rem */
+                padding: 0 0.5rem;  /* Add slight padding to the grid */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 0.75rem;  /* Slightly smaller padding on mobile */
+            }
+            
+            .menu-grid {
+                gap: 1.5rem;  /* Slightly smaller gap on mobile */
+            }
+            
+            .card-content {
+                padding: 1.5rem;  /* Slightly smaller padding on mobile */
+            }
+        }
+
+        /* Add new styles for favorites and scroll-to-top */
+        .favorites-menu {
+            position: fixed;
+            bottom: 2rem;
+            right: 1rem;
+            background: #8B0000;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(139,0,0,0.3);
+            cursor: pointer;
+            z-index: 97;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 6rem;
+            right: 1rem;
+            background: #8B0000;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 97;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 16px rgba(139,0,0,0.3);
+        }
+
+
+        .favorites-panel {
+            position: fixed;
+            bottom: 5rem;
+            right: 1rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            z-index: 97;
+            max-width: 300px;
+            display: none;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .close-sidebar {
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .favorites-panel.show {
+            display: block;
+        }
+
+        .favorite-item {
+            position: relative;
+            transform-origin: right;
+            background: white;
+            overflow: hidden;
+            transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+            height: auto;
+        }
+        .favorite-item.swiping {
+        cursor: grabbing;
+        }
+        .favorite-item.removing {
+            height: 0;
+            opacity: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            transform: translateX(-100%);
+        }
+
+        .swipe-hint {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: #ff4444;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .favorite-item-content {
+            position: relative;
+            background: white;
+            padding: 0.75rem;
+            border-bottom: 1px solid #E6D5C5;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            transition: transform 0.3s ease;
+        }
+        .delete-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: #ff4444;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 1rem;
+            color: white;
+            font-weight: 500;
+            z-index: 1;
+        }
+        .favorite-item.swiping .favorite-item-content {
+            cursor: grabbing;
+        }
+        .dish-id {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        .favorite-btn.active {
+                color: #FF4081;
+        }
+        body.sidebar-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </div>
+            <h1 class="logo">Taste of India</h1>
+        </div>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="close-sidebar" id="closeSidebar">×</div>
+            </div>
+            <div class="sidebar-content">
+                <a href="#Suppen" class="category-link">Suppen</a>
+                <a href="#Vorspeisen" class="category-link">Vorspeisen</a>
+                <a href="#IndischesBrot" class="category-link">Indisches Brot</a>
+                <a href="#Hauptgerichte" class="category-link">Hauptgerichte</a>
+                <a href="#Lammgerichte" class="category-link">Lammgerichte</a>
+                <a href="#ChickenCurry" class="category-link">Chicken Curry</a>
+                <a href="#Vegetarische" class="category-link">Vegetarische</a>
+                <a href="#Biryani" class="category-link">Biryani</a>
+                <a href="#Beilagen" class="category-link">Beilagen</a>
+                <a href="#Salat" class="category-link">Salat</a>
+                <a href="#MeeresSpezialitaten" class="category-link">Meeres Spezialitäten</a>
+                <a href="#Reis" class="category-link">Reis</a>
+                <a href="#KinderMenu" class="category-link">Kinder Menu</a>
+                <a href="#Nachtisch" class="category-link">Nachtisch</a>
+                <a href="#Tee" class="category-link">Tee</a>
+                <a href="#IndischeGetranke" class="category-link">Indische Getranke</a>
+                <a href="#Erfrischungsgetränke" class="category-link">Erfrischungsgetränke</a>
+                <a href="#AlkoholischeGetranke" class="category-link">Alkoholische und Alkoholfreie Getränke</a>
+            </div>
+        </nav>  
+
+        <main class="menu-content">
+            <section id="Suppen" class="menu-section">
+                <h2 class="section-title">Suppen</h2>
+                <div class="menu-grid">
+                    <div class="menu-card" data-id="01">
+                        <img src="https://veganerezepte.eu/wp-content/uploads/2014/03/indische_linsensuppe_dal.jpg" alt="Dal Suppe" class="card-image">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">01</span>
+                                    <h3 class="dish-name">Dal Suppe</h3>
+                                </div>
+                                <span class="dish-price">4,50€</span>
+                            </div>
+                            <p class="dish-description">Eine aromatische Suppe aus roten Linsen, verfeinert mit indischen Gewürzen, Kräutern und einem Hauch von Knoblauch. Leicht cremig und herzhaft.</p>
+                            <div class="card-footer">
+                                <div class="dietary-info">
+                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                </div>
+                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="menu-card" data-id="02">
+                        <img src="https://img.chefkoch-cdn.de/rezepte/3497191521042462/bilder/1533429/crop-960x720/omas-huehnersuppe.jpg" alt="Hühnersuppe" class="card-image">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">02</span>
+                                    <h3 class="dish-name">Hühnersuppe</h3>
+                                </div>
+                                <span class="dish-price">5,00€</span>
+                            </div>
+                            <p class="dish-description">Eine kräftige Brühe mit zartem Hühnerfleisch, verfeinert mit Salz, frischen Kräutern und einer Auswahl an indischen Gewürzen für ein wohltuendes Aroma.</p>
+                            <div class="card-footer">
+                                <div class="dietary-info">
+                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                </div>
+                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="menu-card" data-id="03">
+                        <img src="https://images.eatsmarter.de/sites/default/files/styles/max_size/public/tomatensuppe-herstellen-333075.jpg" alt="Tomatensuppe" class="card-image">
+                        <div class="card-content">
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">03</span>
+                                    <h3 class="dish-name">Tomatensuppe</h3>
+                                </div>
+                                <span class="dish-price">5,00€</span>
+                            </div>
+                            <p class="dish-description">Fein pürierte Tomaten, langsam gekocht in einer aromatischen Brühe mit einer leichten Würzung aus Salz und frischen Kräutern für einen fruchtig-milden Geschmack.</p>
+                            <div class="card-footer">
+                                <div class="dietary-info">
+                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                </div>
+                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                            </div>
+                        </div>
+                    </div>
+                    <main class="menu-content">
+                    </main>
+                </section>
+
+                <section id="Vorspeisen" class="menu-section">
+                    <h2 class="section-title">Vorspeisen</h2>
+                    <div class="menu-grid">
+                        <div class="menu-card" data-id="04">
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipO1DOSJQHX9V435ypyqygDQ4HfV1cmORrWkOASz=s680-w680-h510-rw" alt="Cheese Pakora" class="card-image">
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">04</span>
+                                        <h3 class="dish-name">Cheese Pakora</h3>
+                                    </div>
+                                    <span class="dish-price">6,50€</span>
+                                </div>
+                                <p class="dish-description">Frischer hausgemachter Hüttenkäse, mariniert in einer würzigen Kichererbsen-Teighülle und goldbraun frittiert – knusprig von außen, zart von innen.</p>
+                                <div class="card-footer">
+                                    <div class="dietary-info">
+                                        <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                    </div>
+                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="menu-card" data-id="05">
+                            <img src="https://assets.tmecosys.com/image/upload/t_web767x639/img/recipe/ras/Assets/F7F38E73-9DE3-4648-AC36-846B91E2EC6C/Derivates/76E238A1-13B9-4115-B1C7-3E93923E299E.jpg" alt="Onion Bhaji" class="card-image">
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">05</span>
+                                        <h3 class="dish-name">Onion Bhaji</h3>
+                                    </div>
+                                    <span class="dish-price">5,00€</span>
+                                </div>
+                                <p class="dish-description">Knusprige Zwiebelringe, in einem herzhaften Kichererbsen-Teig gewendet und frittiert – ein beliebter indischer Snack mit intensivem Aroma.</p>
+                                <div class="card-footer">
+                                    <div class="dietary-info">
+                                        <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                    </div>
+                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="menu-card" data-id="06">
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipMB34B_cv77mlBc2_1LD9HKbxFJutHR-8dTp24O=s680-w680-h510-rw" alt="Mixed Pakora" class="card-image">
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">06</span>
+                                        <h3 class="dish-name">Mixed Pakora</h3>
+                                    </div>
+                                    <span class="dish-price">6,00€</span>
+                                </div>
+                                <p class="dish-description">Eine köstliche Auswahl an saisonalem Gemüse, mariniert und in einem knusprigen Kichererbsen-Teig frittiert – perfekt als Vorspeise oder Beilage.</p>
+                                <div class="card-footer">
+                                    <div class="dietary-info">
+                                        <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                    </div>
+                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="menu-card" data-id="07">
+                            <img src="https://pipingpotcurry.com/wp-content/uploads/2022/10/Cauliflower-Pakora.-Gobi-ke-pakode-Piping-Pot-Curry-4.jpg" alt="Gobi Pakora" class="card-image">
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">07</span>
+                                        <h3 class="dish-name">Gobi Pakora</h3>
+                                    </div>
+                                    <span class="dish-price">5,00€</span>
+                                </div>
+                                <p class="dish-description">Frischer Blumenkohl, mit aromatischen Gewürzen mariniert und in einer knusprigen Kichererbsen-Panade frittiert – eine herzhafte Delikatesse.</p>
+                                <div class="card-footer">
+                                    <div class="dietary-info">
+                                        <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                    </div>
+                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="menu-card" data-id="08">
+                            <img src="https://chickenandchive.com/wp-content/uploads/2024/07/crispy-chicken-pakora-scaled-735x1103.jpg" alt="Chicken Pakora" class="card-image">
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">08</span>
+                                        <h3 class="dish-name">Chicken Pakora</h3>
+                                    </div>
+                                    <span class="dish-price">6,50€</span>
+                                </div>
+                                <p class="dish-description">Zarte Hähnchenstücke, in einer würzigen Kichererbsen-Teighülle ummantelt und knusprig frittiert – saftig, aromatisch und unwiderstehlich.</p>
+                                <div class="card-footer">
+                                    <div class="dietary-info">
+                                        <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                    </div>
+                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="menu-card" data-id="09">
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipOB2xo6B4nctEWvHO6coxV06FYo6Epy80kPcgly=s680-w680-h510-rw" alt="Samosa" class="card-image">
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">09</span>
+                                        <h3 class="dish-name">Samosa (2 Stück)</h3>
+                                    </div>
+                                    <span class="dish-price">5,00€</span>
+                                </div>
+                                <p class="dish-description">Traditionelle, goldbraun frittierte Teigtaschen, gefüllt mit würzigen Kartoffeln und Erbsen, verfeinert mit ausgewählten indischen Gewürzen – ein Klassiker der indischen Küche.</p>
+                                <div class="card-footer">
+                                    <div class="dietary-info">
+                                        <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                    </div>
+                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                </div>
+                            </div>
+                        </div>
+                        <main class="menu-content">
+                        </main>
+                    </section>
+                        <section id="IndischesBrot" class="menu-section">
+                            <h2 class="section-title">Indisches Brot</h2>
+                            <div class="menu-grid">
+                                <div class="menu-card" data-id="10">
+                                    <img src="https://lh3.googleusercontent.com/p/AF1QipN9wapz7_84jXhyWu3nxfBASLCb87TEgCqeAKoS=s680-w680-h510-rw" alt="Naan" class="card-image">
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">10</span>
+                                                <h3 class="dish-name">Naan</h3>
+                                            </div>
+                                            <span class="dish-price">2,90€</span>
+                                        </div>
+                                        <p class="dish-description">Ein traditionelles, mehrschichtiges Fladenbrot aus feinstem Weizenmehl, im Tandoor-Ofen gebacken.</p>
+                                        <div class="card-footer">
+                                            <div class="dietary-info">
+                                                <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                            </div>
+                                            <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <div class="menu-card" data-id="11">
+                                    <img src="https://rehalsdivine.com.au/cdn/shop/products/butter-naan.png?v=1661403899" alt="Butter Naan" class="card-image">
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">11</span>
+                                                <h3 class="dish-name">Butter Naan</h3>
+                                            </div>
+                                            <span class="dish-price">3,50€</span>
+                                        </div>
+                                        <p class="dish-description">Ein weiches, mehrschichtiges Fladenbrot aus feinem Weizenmehl, verfeinert mit geschmolzener Butter für einen besonders aromatischen Geschmack.</p>
+                                        <div class="card-footer">
+                                            <div class="dietary-info">
+                                                <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                            </div>
+                                            <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <div class="menu-card" data-id="12">
+                                    <img src="https://lh3.googleusercontent.com/p/AF1QipMaCBsYzwDRucGNuznr7Rer3yVVQXchU6WYGhUd=s680-w680-h510-rw" alt="Garlic Naan" class="card-image">
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">12</span>
+                                                <h3 class="dish-name">Garlic Naan</h3>
+                                            </div>
+                                            <span class="dish-price">3,50€</span>
+                                        </div>
+                                        <p class="dish-description">Fladenbrot aus Weizenmehl, mit frischem Knoblauch und Kräutern verfeinert und im Tandoor-Ofen gebacken.</p>
+                                        <div class="card-footer">
+                                            <div class="dietary-info">
+                                                <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                            </div>
+                                            <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <div class="menu-card" data-id="13">
+                                    <img src="https://christchurch.noveltysweets.co.nz/wp-content/uploads/2021/08/garlic-naan.jpg" alt="Cheese Naan" class="card-image">
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">13</span>
+                                                <h3 class="dish-name">Cheese Naan</h3>
+                                            </div>
+                                            <span class="dish-price">3,90€</span>
+                                        </div>
+                                        <p class="dish-description">Weiches Naan-Brot, gefüllt mit cremigem Hüttenkäse und einer aromatischen Mischung aus indischen Gewürzen, im Tandoor-Ofen gebacken.</p>
+                                        <div class="card-footer">
+                                            <div class="dietary-info">
+                                                <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                            </div>
+                                            <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <div class="menu-card" data-id="14">
+                                    <img src="https://cdn.shopify.com/s/files/1/0551/8009/9722/files/4_b1ca596e-51a9-4fae-b067-071a80f26a14_480x480.png?v=1716792199" alt="Tandoori Roti" class="card-image">
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">14</span>
+                                                <h3 class="dish-name">Tandoori Roti</h3>
+                                            </div>
+                                            <span class="dish-price">2,50€</span>
+                                        </div>
+                                        <p class="dish-description">Ein gesundes, traditionelles Vollkornbrot aus frischem Teig, im Tandoor-Ofen knusprig gebacken.</p>
+                                        <div class="card-footer">
+                                            <div class="dietary-info">
+                                                <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                            </div>
+                                            <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <div class="menu-card" data-id="15">
+                                    <img src="https://toledgwareroad.com/wp-content/uploads/2024/06/Keema-Naan.jpg" alt="Keema Naan" class="card-image">
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">15</span>
+                                                <h3 class="dish-name">Keema Naan</h3>
+                                            </div>
+                                            <span class="dish-price">4,50€</span>
+                                        </div>
+                                        <p class="dish-description">Fladenbrot aus Weizenmehl, gefüllt mit würzigem, gehacktem Lammfleisch und einer ausgewählten Mischung indischer Gewürze, im Tandoor-Ofen gebacken.</p>
+                                        <div class="card-footer">
+                                            <div class="dietary-info">
+                                                <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                            </div>
+                                            <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                <div class="menu-card" data-id="16">
+                                    <img src="https://uptownasia.in/wp-content/uploads/2024/09/garlic-naan-01.jpg" alt="Indische Spezialität Naan" class="card-image">
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">16</span>
+                                                <h3 class="dish-name">Indische Spezialität</h3>
+                                            </div>
+                                            <span class="dish-price">4,10€</span>
+                                        </div>
+                                        <p class="dish-description">Fladenbrot mit einer feinen Käsefüllung, bestreut mit geröstetem Sesam und scharfen grünen Chilis für eine aromatische und leicht würzige Note.</p>
+                                        <div class="card-footer">
+                                            <div class="dietary-info">
+                                                <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                            </div>
+                                            <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <main class="menu-content">
+                                </main>
+                            </section>  
+                                
+
+                            <section id="Hauptgerichte" class="menu-section">
+                                <h2 class="section-title">Hauptgerichte</h2>
+                                <div class="menu-grid">
+                                    <div class="menu-card" data-id="17">
+                                        <img src="https://www.hungrylankan.com/wp-content/uploads/2022/12/dosa-and-sambar-1.jpg" alt="Tandoori Chicken" class="card-image">
+                                        <div class="card-content">
+                                            <div class="card-header">
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">17</span>
+                                                    <h3 class="dish-name">Tandoori Chicken</h3>
+                                                </div>
+                                                <span class="dish-price">15,50€</span>
+                                            </div>
+                                            <p class="dish-description">Zartes Hühnerfleisch, mariniert in einer aromatischen Mischung aus Joghurt, Knoblauch, Ingwer und traditionellen indischen Gewürzen. Anschließend am Spieß im Tandoor-Ofen gegrillt, wodurch es besonders saftig und geschmacksintensiv wird.</p>
+                                            <div class="card-footer">
+                                                <div class="dietary-info">
+                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                </div>
+                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <div class="menu-card" data-id="18">
+                                        <img src="https://mattcooperbites.com/wp-content/uploads/2023/11/Tikka.jpg" alt="Chicken Tikka" class="card-image">
+                                        <div class="card-content">
+                                            <div class="card-header">
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">18</span>
+                                                    <h3 class="dish-name">Chicken Tikka</h3>
+                                                </div>
+                                                <span class="dish-price">13,50€</span>
+                                            </div>
+                                            <p class="dish-description">Saftige Hähnchenstücke, die 24 Stunden lang in einer würzigen Marinade aus Joghurt, Zitronensaft, Knoblauch, Ingwer und ausgewählten Gewürzen eingelegt und anschließend im Tandoor-Ofen am Spieß gegrillt werden. Ein Klassiker der indischen Küche.</p>
+                                            <div class="card-footer">
+                                                <div class="dietary-info">
+                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                </div>
+                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <div class="menu-card" data-id="19">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTld7YARh1LhX4eyfumqdCsGzthgrQzQ4LKog&s" alt="Tandoori Garnelen" class="card-image">
+                                        <div class="card-content">
+                                            <div class="card-header">
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">19</span>
+                                                    <h3 class="dish-name">Tandoori Garnelen</h3>
+                                                </div>
+                                                <span class="dish-price">22,50€</span>
+                                            </div>
+                                            <p class="dish-description">Frische, große Garnelen, 24 Stunden lang in einer exotischen Gewürzmischung mit Joghurt und Zitronensaft mariniert, bevor sie im heißen Tandoor-Ofen knusprig gebacken werden. Serviert mit Zitronenspalten für eine perfekte Geschmacksbalance.</p>
+                                            <div class="card-footer">
+                                                <div class="dietary-info">
+                                                    <i class="fas fa-fish" title="Nicht vegetarisch"></i>
+                                                </div>
+                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <div class="menu-card" data-id="20">
+                                        <img src="https://smokeandflame.net/cdn/shop/articles/Screenshot_2024-02-24_053330_800x.png?v=1708753216" alt="Indischer Grillmix" class="card-image">
+                                        <div class="card-content">
+                                            <div class="card-header">
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">20</span>
+                                                    <h3 class="dish-name">Indischer Grillmix</h3>
+                                                </div>
+                                                <span class="dish-price">26,90€</span>
+                                            </div>
+                                            <p class="dish-description">Eine köstliche Auswahl an Spezialitäten aus dem Tandoor-Ofen: saftiger Lammkebab, würzig gegrilltes Hähnchen und aromatische Meeresfrüchte, alle mit traditionellen Gewürzen mariniert und perfekt gegrillt. Ein Muss für Liebhaber indischer Grillgerichte.</p>
+                                            <div class="card-footer">
+                                                <div class="dietary-info">
+                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                </div>
+                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <main class="menu-content">
+                                    </main>
+                                </section>
+
+                                    <section id="Lammgerichte" class="menu-section">
+                                        <h2 class="section-title">Lammgerichte</h2>
+                                        <div class="menu-grid">
+                                            <div class="menu-card" data-id="21">
+                                                <img src="https://www.wildeisen.ch/sites/default/files/files/2014-12/bild_3372.jpg" alt="Lamm Curry" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">21</span>
+                                                            <h3 class="dish-name">Lamm Curry</h3>
+                                                        </div>
+                                                        <span class="dish-price">16,00€</span>
+                                                    </div>
+                                                    <p class="dish-description">Zartes Lammfleisch in einer aromatischen, pikanten Currysauce aus frischem Ingwer, Zwiebeln, Knoblauch und einer fein abgestimmten Mischung indischer Gewürze.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    
+                                            <div class="menu-card" data-id="22">
+                                                <img src="https://cdn.shopify.com/s/files/1/0507/5442/0897/files/Vindaloo_klein_AdobeStock_195003766_1024x1024.jpg?v=1613332898" alt="Lamm Vindaloo" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">22</span>
+                                                            <h3 class="dish-name">Lamm Vindaloo</h3>
+                                                        </div>
+                                                        <span class="dish-price">16,90€</span>
+                                                    </div>
+                                                    <p class="dish-description">Saftige Lammfleischstücke in einer scharfen, würzigen Sauce mit Gewürzzwiebeln und Kartoffeln, inspiriert von der portugiesisch-indischen Küche Goas.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                            <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    
+                                            <div class="menu-card" data-id="23">
+                                                <img src="https://www.shemins.com/wp-content/uploads/2017/08/Shemins-Lamb-Saag.jpg" alt="Lamm Saag" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">23</span>
+                                                            <h3 class="dish-name">Lamm Saag</h3>
+                                                        </div>
+                                                        <span class="dish-price">16,50€</span>
+                                                    </div>
+                                                    <p class="dish-description">Zarte Lammstücke, mit Zwiebeln, Ingwer und Knoblauch angebraten und anschließend in einer cremigen, würzigen Spinatsoße verfeinert.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="24">
+                                                <img src="https://germanabendbrot.de/wp-content/uploads/2018/10/Lamm-indisch.jpg" alt="Lamm Madras" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">24</span>
+                                                            <h3 class="dish-name">Lamm Madras</h3>
+                                                        </div>
+                                                        <span class="dish-price">16,50€</span>
+                                                    </div>
+                                                    <p class="dish-description">Lammfleisch in einer kräftig gewürzten Madras-Currysauce mit Kokosnuss, die für einen intensiven, leicht scharfen Geschmack sorgt.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                            <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="25">
+                                                <img src="https://khinskitchen.com/wp-content/uploads/2022/06/lamb-tikka-masala-07.jpg" alt="Lamm Masala" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">25</span>
+                                                            <h3 class="dish-name">Lamm Masala</h3>
+                                                        </div>
+                                                        <span class="dish-price">16,50€</span>
+                                                    </div>
+                                                    <p class="dish-description">Ein herzhaft-würziges Curry mit zartem Lammfleisch, frischem Ingwer, Knoblauch und Zwiebeln, verfeinert mit einer traditionellen Masala-Gewürzmischung.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="26">
+                                                <img src="https://www.recipetineats.com/tachyon/2024/05/Lamb-korma-curry-2.jpg" alt="Lamm Korma" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">26</span>
+                                                            <h3 class="dish-name">Lamm Korma</h3>
+                                                        </div>
+                                                        <span class="dish-price">15,90€</span>
+                                                    </div>
+                                                    <p class="dish-description">Zartes Lammfleisch in einer milden, cremigen Sauce aus Sahne, Nüssen und feinen Gewürzen – besonders aromatisch und angenehm mild.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="27">
+                                                <img src="https://bombaypalace.wien/wp-content/uploads/2020/08/punjabi-chicken-curryweb.jpg" alt="Lamm Punjabi" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">27</span>
+                                                            <h3 class="dish-name">Lamm Punjabi</h3>
+                                                        </div>
+                                                        <span class="dish-price">16,90€</span>
+                                                    </div>
+                                                    <p class="dish-description">Ein deftiges, traditionelles Punjabi-Curry mit saftigem Lammfleisch, Linsen, Zwiebeln und frischem Ingwer, langsam geschmort für ein intensives Aroma.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="28">
+                                                <img src="https://gangarestaurant.de/wp-content/uploads/2024/06/IMG-20240621-WA0065.jpg" alt="Lamm Mango" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">28</span>
+                                                            <h3 class="dish-name">Lamm Mango</h3>
+                                                        </div>
+                                                        <span class="dish-price">15,50€</span>
+                                                    </div>
+                                                    <p class="dish-description">Lammfleisch in einer fruchtig-exotischen Mangosauce mit einer feinen Balance aus Süße und Würze – eine besondere Spezialität der indischen Küche.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="29">
+                                                <img src="https://image.essen-und-trinken.de/11937760/t/4i/v9/w1440/r1/-/rokkanisches-lamm-mit-couscous-cbb166b2c400a36d18945b28da45a9b8-marokkanisches-lamm-mit-couscous-jpg--57532-.jpg" alt="Lamm Chana" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">29</span>
+                                                            <h3 class="dish-name">Lamm Chana</h3>
+                                                        </div>
+                                                        <span class="dish-price">14,90€</span>
+                                                    </div>
+                                                    <p class="dish-description">Ein herzhaftes Curry mit zartem Lammfleisch und Kichererbsen, verfeinert mit aromatischen Gewürzen für eine perfekte Geschmackskombination.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="30">
+                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs3HiifPesbZYC1xwWDRJH8T8pRPqZzZXG9A&s" alt="Chili Lamm" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">30</span>
+                                                            <h3 class="dish-name">Chili Lamm</h3>
+                                                        </div>
+                                                        <span class="dish-price">16,50€</span>
+                                                    </div>
+                                                    <p class="dish-description">Ein feuriges Curry mit frischer Paprika, Zwiebeln, Tomatensauce, Chili, Sojasauce und Ingwer – ideal für Liebhaber scharfer Gerichte.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                            <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="menu-card" data-id="31">
+                                                <img src="https://pizzasonne-online.de/wp-content/uploads/2019/01/pizzasonne_id_054_lamm_karahi.jpg" alt="Lamm Karahi" class="card-image">
+                                                <div class="card-content">
+                                                    <div class="card-header">
+                                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                            <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">31</span>
+                                                            <h3 class="dish-name">Lamm Karahi</h3>
+                                                        </div>
+                                                        <span class="dish-price">15,50€</span>
+                                                    </div>
+                                                    <p class="dish-description">Lammfleisch in einer würzigen Sauce mit frischem Ingwer, Knoblauch, Kümmel, Peperoni und Zwiebeln, serviert in traditioneller Karahi-Pfanne.</p>
+                                                    <div class="card-footer">
+                                                        <div class="dietary-info">
+                                                            <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                        </div>
+                                                        <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <main class="menu-content">
+                                            </main>
+                                        </section>
+
+                                            <section id="ChickenCurry" class="menu-section">
+                                                <h2 class="section-title">Chicken Curry</h2>
+                                                <div class="menu-grid">
+                                                    <div class="menu-card" data-id="32">
+                                                        <img src="https://madscookhouse.com/wp-content/uploads/2022/02/Chicken-Korma-Nut-Free-500x500.jpg" alt="Chicken Korma" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">32</span>
+                                                                    <h3 class="dish-name">Chicken Korma</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Zartes Hühnerfleisch in einer speziellen Korma-Sauce mit fein gemahlenen Nüssen, Sahne und einer aromatischen Mischung aus indischen Gewürzen.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="33">
+                                                        <img src="https://media.discordapp.net/attachments/1255915862712516709/1339261683566248029/PXL_20250211_184057284.jpg?ex=67ae1423&is=67acc2a3&hm=ffa1dc4759e8030a79dec2dc461c276660862ea9cb2974db252ee383ccf48acd&=&format=webp&width=1208&height=910" alt="Butter Chicken" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">33</span>
+                                                                    <h3 class="dish-name">Butter Chicken</h3>
+                                                                </div>
+                                                                <span class="dish-price">14,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Im Tandoor mariniertes und gegartes Hühnerfleisch, serviert in einer cremigen Buttersauce mit Tomaten und erlesenen Gewürzen.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="34">
+                                                        <img src="https://fodmap-publicsite-us-east-2.s3.amazonaws.com/production/media/images/AdobeStock_142271687_1.original.jpg" alt="Chicken Madras" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">34</span>
+                                                                    <h3 class="dish-name">Chicken Madras</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Ein südindisches Spezialgericht mit zartem Hühnerfleisch, Kokosmilch, Knoblauch, Ingwer und einer würzigen Mischung aus exotischen Gewürzen.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="35">
+                                                        <img src="https://bellyfull.net/wp-content/uploads/2021/05/Chicken-Tikka-Masala-blog.jpg" alt="Chicken Tikka Masala" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">35</span>
+                                                                    <h3 class="dish-name">Chicken Tikka Masala</h3>
+                                                                </div>
+                                                                <span class="dish-price">14,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Zarte Hühnerfleischstücke, mariniert in Ingwer, Knoblauch und Joghurt, mit speziellen Kräutern und Gewürzen im Tandoor gegrillt und in einer cremigen Tomaten-Cashew-Sauce mit Butter verfeinert.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="36">
+                                                        <img src="https://myfoodies.ca/wp-content/uploads/2023/09/968d000004907e0e895e262fa7c9d3ca.jpg" alt="Chicken Chana" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">36</span>
+                                                                    <h3 class="dish-name">Chicken Chana</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hähnchenfleisch in pikanter Currysauce mit Kichererbsen und einer feinen Gewürzmischung.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="37">
+                                                        <img src="https://www.whiskaffair.com/wp-content/uploads/2021/05/Chicken-Vindaloo-2-3.jpg" alt="Chicken Vindaloo" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">37</span>
+                                                                    <h3 class="dish-name">Chicken Vindaloo</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Zarte Hühnerfleischstücke, in einer würzigen, leicht scharfen Sauce mit Zwiebeln und jungen Kartoffeln gegart, verfeinert mit aromatischen Gewürzen.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                    <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="38">
+                                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLbKDjJGR7WN-a1g1QfTV747GlGjFeToYR-w&s" alt="Chicken Curry" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">38</span>
+                                                                    <h3 class="dish-name">Chicken Curry</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Saftiges Hähnchenfleisch in einer pikanten Currysauce aus frischem Ingwer, Zwiebeln, Knoblauch und traditionellen indischen Gewürzen.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="39">
+                                                        <img src="https://media.discordapp.net/attachments/1255915862712516709/1339261515815063705/PXL_20250211_183010031.jpg?ex=67ae13fb&is=67acc27b&hm=97044f0dd2778812148dd7f55142f4501f57cea44a4750ae7ed8ed9db585b6cc&=&format=webp&width=1208&height=910" alt="Chicken Jhal Farezi" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">39</span>
+                                                                    <h3 class="dish-name">Chicken Jhal Farezi</h3>
+                                                                </div>
+                                                                <span class="dish-price">14,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Ein scharfes Curry mit Hühnerfilet, Zwiebeln, Ingwer, Chili, Tomaten und knackiger Paprika.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                    <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="40">
+                                                        <img src="https://www.theendlessmeal.com/wp-content/uploads/2020/04/Mango-Chicken-Curry.jpg" alt="Chicken Mango" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">40</span>
+                                                                    <h3 class="dish-name">Chicken Mango</h3>
+                                                                </div>
+                                                                <span class="dish-price">14,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Ein einzigartiges Curry, verfeinert mit fruchtiger Mango, das süße und herzhafte Aromen auf köstliche Weise vereint – ein modernes indisches Geschmackserlebnis.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="41">
+                                                        <img src="https://media.discordapp.net/attachments/1255915862712516709/1339261804391698443/PXL_20250211_191018727.jpg?ex=67ae1440&is=67acc2c0&hm=d7719e96ba919d50d19d54a62e18a1880761ad5f65eeee1a38ff61d05250bdb6&=&format=webp&width=1208&height=910" alt="Chicken Saag" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">41</span>
+                                                                    <h3 class="dish-name">Chicken Saag</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hähnchenfleisch, kombiniert mit aromatischem Spinat und einer würzigen indischen Sauce.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="42">
+                                                        <img src="https://www.indische-rezepte.net/wp-content/uploads/2023/06/chilli-chicken-1024x683.jpg" alt="Chili Chicken" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">42</span>
+                                                                    <h3 class="dish-name">Chili Chicken</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hähnchenfleisch mit Knoblauch, Zwiebeln, Ingwer, frischer Paprika und Sojasauce – würzig und geschmackvoll.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                    <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="43">
+                                                        <img src="https://thechowdownblog.com/wp-content/uploads/2021/01/Indian-Curry-Chicken.jpg" alt="Chicken Veg" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">43</span>
+                                                                    <h3 class="dish-name">Chicken Veg</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hähnchenfleisch mit frischem Gemüse in einer mittelscharfen, würzigen Sauce.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="44">
+                                                        <img src="https://stewwithsaba.com/wp-content/uploads/2023/04/IMG_9109.jpg" alt="Chicken Karahi" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">44</span>
+                                                                    <h3 class="dish-name">Chicken Karahi</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hähnchenfleisch in einer herzhaften Currysauce mit Ingwer, Knoblauch, Kümmel, Peperoni und Zwiebeln – typisch nach Karahi-Art zubereitet.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <main class="menu-content">
+                                                    </main>
+                                                </section>
+
+                                                    <section id="Vegetarische" class="menu-section">
+                                                        <h2 class="section-title">Vegetarische</h2>
+                                                        <div class="menu-grid">
+                                                    <div class="menu-card" data-id="45">
+                                                        <img src="https://www.cookshideout.com/wp-content/uploads/2008/09/Vegetable-Vindaloo-FI.jpg" alt="Vegetable Vindaloo" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">45</span>
+                                                                    <h3 class="dish-name">Vegetable Vindaloo</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Gemüse in einer traditionellen indischen Gewürzmischung, zubereitet in einer scharfen Vindaloo-Sauce. Dieses Gericht ist eine würzige Mischung aus saisonalem Gemüse, perfekt abgestimmt mit der scharfen, aromatischen Sauce.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                    <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="46">
+                                                        <img src="https://images.lecker.de/palak-paneer-b3,id=ba66efbb,b=lecker,w=1600,rm=sk.jpeg" alt="Palak Paneer" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">46</span>
+                                                                    <h3 class="dish-name">Palak Paneer</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hausgemachter indischer Käse, kombiniert mit frischem Spinat, Zwiebeln, Ingwer, Knoblauch und einer Auswahl an traditionellen indischen Gewürzen. Ein mildes und aromatisches Gericht, das den Geschmack von Spinat und Käse perfekt vereint.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="47">
+                                                        <img src="https://www.sanjanafeasts.co.uk/wp-content/uploads/2020/01/Restaurant-Style-Shahi-Paneer-735x1103.jpg" alt="Shahi Paneer" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">47</span>
+                                                                    <h3 class="dish-name">Shahi Paneer</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Ein königliches Gericht mit hausgemachtem Hüttenkäse, zubereitet in einer milden und verfeinerten Curry-Sauce, die mit edlen Gewürzen und Kräutern angereichert ist. Es ist eine delikate, cremige Spezialität, die perfekt zu Reis oder Naan passt.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="48">
+                                                        <img src="https://thebigmansworld.com/wp-content/uploads/2022/11/vegetable-korma-recipe.jpg" alt="Vegetable Korma" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">48</span>
+                                                                    <h3 class="dish-name">Vegetable Korma</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Ein gemischtes Gemüsegericht, das in einer speziell gewürzten Korma-Sauce zubereitet wird. Diese milde, aber geschmackvolle Sauce wird mit nussigen Aromen und einer Mischung aus aromatischen Gewürzen angereichert.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="menu-card" data-id="49">
+                                                        <img src="https://www.funfoodfrolic.com/wp-content/uploads/2023/04/Dal-Makhani-1.jpg" alt="Daal Makhani" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">49</span>
+                                                                    <h3 class="dish-name">Daal Makhani</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Schwarze Linsen, die in einer reichhaltigen und cremigen Buttersauce gegart werden, gewürzt mit einer einzigartigen Mischung aus indischen Gewürzen. Dieses Gericht ist eine wahre Delikatesse und wird oft mit Naan oder Reis serviert.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="50">
+                                                        <img src="https://vegecravings.com/wp-content/uploads/2018/01/Dal-Tadka-Recipe-Step-By-Step-Instructions.jpg" alt="Dal Tarka" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">50</span>
+                                                                    <h3 class="dish-name">Dal Tarka</h3>
+                                                                </div>
+                                                                <span class="dish-price">11,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Linsen, die mit einer speziellen Gewürzmischung, Ingwer, Knoblauch und Zwiebeln zubereitet werden. Ein klassisches indisches Gericht, das durch die Gewürze und das Tarka (die gebratene Gewürzmischung) einen einzigartigen Geschmack erhält.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="51">
+                                                        <img src="https://niksharmacooks.com/wp-content/uploads/2022/11/AlooGobiDSC_5234.jpg" alt="Alu Gobi" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">51</span>
+                                                                    <h3 class="dish-name">Alu Gobi</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Blumenkohl und Kartoffeln, gebraten mit Zwiebeln, Ingwer und Knoblauch. Dieses einfache, aber schmackhafte Gericht ist ein Favorit der indischen Küche, bekannt für seine herzhafte Mischung aus Gewürzen und Gemüse.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="52">
+                                                        <img src="https://www.vegrecipesofindia.com/wp-content/uploads/2021/02/matar-paneer-2.jpg" alt="Mattar Paneer" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">52</span>
+                                                                    <h3 class="dish-name">Mattar Paneer</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hausgemachter Hüttenkäse kombiniert mit frischen grünen Erbsen, Zwiebeln, Tomaten und einer Mischung aus Kaschmir-Gewürzen. Ein köstliches Gericht, das die Frische der Erbsen und die Cremigkeit des Paneers vereint.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="menu-card" data-id="53">
+                                                        <img src="https://www.seriouseats.com/thmb/2KtHVPso7I68piUvR0501CjHJyY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__images__2016__03__20160328-channa-masala-recipe-8-2ab6195d55ae4068a8c1d36d7371f5f7.jpg" alt="Chana Masala" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">53</span>
+                                                                    <h3 class="dish-name">Chana Masala</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Kichererbsen in einer speziellen Gewürzmischung, mit Zwiebeln und Tomaten gebraten. Dieses würzige und nahrhafte Gericht ist ein Klassiker der nordindischen Küche, der sowohl vegetarisch als auch vegan ist.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="menu-card" data-id="54">
+                                                        <img src="https://files.mob-cdn.co.uk/recipes/2024/07/Chilli-Paneer-Recipe.jpg" alt="Chilli Paneer" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">54</span>
+                                                                    <h3 class="dish-name">Chilli Paneer</h3>
+                                                                </div>
+                                                                <span class="dish-price">14,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hausgemachter Hüttenkäse, gebraten und serviert mit Zwiebeln, Paprika und einer süß-scharfen Sauce. Ein scharfes und zugleich süßes Gericht, das den Geschmack von paneer mit scharfen Gewürzen kombiniert.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                    <i class="fas fa-pepper-hot" title="Scharf"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="menu-card" data-id="55">
+                                                        <img src="https://myfoodstory.com/wp-content/uploads/2021/07/restaurant-style-paneer-butter-masala-2.jpg" alt="Butter Paneer" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">55</span>
+                                                                    <h3 class="dish-name">Butter Paneer</h3>
+                                                                </div>
+                                                                <span class="dish-price">14,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Ein cremiges Curry-Gericht aus Blumenkohl und Kartoffeln, das mit Zwiebeln, Ingwer und Knoblauch zubereitet wird. Das milde und cremige Curry ist mit einer Mischung aus nussigen Aromen und Gewürzen angereichert.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="menu-card" data-id="56">
+                                                        <img src="https://www.cookwithmanali.com/wp-content/uploads/2023/03/Vegan-Indian-Aloo-Palak-Recipe.jpg" alt="Alu Palak" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">56</span>
+                                                                    <h3 class="dish-name">Alu Palak</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Kartoffeln und frischer Spinat nach indischer Art zubereitet, gewürzt mit traditionellen indischen Gewürzen. Ein einfaches und nahrhaftes Gericht, das sowohl vegan als auch glutenfrei ist.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="menu-card" data-id="57">
+                                                        <img src="https://coventmarket.com/wp-content/uploads/2022/07/Mixed-Vegetable-Paneer-Butter-Masala.jpg" alt="Butter Veg" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">57</span>
+                                                                    <h3 class="dish-name">Butter Veg</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Gemischtes Gemüse, das in einer cremigen Tomaten-Nuss-Sauce mit einer feinen Mischung aus Gewürzen und Kräutern zubereitet wird. Dieses Gericht ist besonders mild und cremig, mit einem ausgewogenen Geschmack.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="menu-card" data-id="58">
+                                                        <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2022/06/baingan-bharta.jpg" alt="Baingan Bharta" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">58</span>
+                                                                    <h3 class="dish-name">Baingan Bharta</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Auberginen, die über offener Flamme im Tandoor gegrillt und dann püriert werden. Gewürzt mit Kräutern und verfeinert mit Zwiebeln, Ingwer und Knoblauch, entsteht ein rauchiges, reichhaltiges Curry.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="menu-card" data-id="59">
+                                                        <img src="https://www.sailusfood.com/wp-content/uploads/2018/06/bhindi-fry.jpg" alt="Bhindi Fry Masala" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">59</span>
+                                                                    <h3 class="dish-name">Bhindi Fry Masala</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Frittierte Okraschoten, die mit einer speziellen Garam Masala-Gewürzmischung, frischen Tomaten, Zwiebeln, Ingwer und Koriander serviert werden. Ein aromatisches und knuspriges Gericht, das perfekt zu Reis passt.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="menu-card" data-id="60">
+                                                        <img src="https://www.spiceupthecurry.com/wp-content/uploads/2021/02/kadai-paneer-2-500x500.jpg" alt="Kadahi Paneer" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">60</span>
+                                                                    <h3 class="dish-name">Kadahi Paneer</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hüttenkäse, zubereitet mit Zwiebeln, grünem Paprika und roten Peperoni in einer exotischen Currysauce. Ein würziges Gericht, das durch die Vielfalt der Gewürze und die Frische des Paprikas besticht.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="menu-card" data-id="61">
+                                                        <img src="https://cookingfromheart.com/wp-content/uploads/2017/03/Paneer-Tikka-Masala-4.jpg" alt="Paneer Tikka Masala" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">61</span>
+                                                                    <h3 class="dish-name">Paneer Tikka Masala</h3>
+                                                                </div>
+                                                                <span class="dish-price">14,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Hausgemachter Hüttenkäse, der in einer Spezial-Sauce des Chefs mariniert und dann gegrillt wird. Diese Sauce ist eine Mischung aus Tomaten, Gewürzen und frischen Kräutern und verleiht dem Gericht einen intensiven Geschmack.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <main class="menu-content">
+                                                    </main>
+                                                </section>
+                                                <section id="Biryani" class="menu-section">
+                                                    <h2 class="section-title">Biryani</h2>
+                                                    <div class="menu-grid">
+                                                        <div class="menu-card" data-id="62">
+                                                            <img src="https://www.licious.in/blog/wp-content/uploads/2022/06/chicken-hyderabadi-biryani-01-750x750.jpg" alt="Chicken Biryani" class="card-image">
+                                                            <div class="card-content">
+                                                                <div class="card-header">
+                                                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">62</span>
+                                                                        <h3 class="dish-name">Chicken Biryani</h3>
+                                                                    </div>
+                                                                    <span class="dish-price">14,50€</span>
+                                                                </div>
+                                                                <p class="dish-description">Zartes Hähnchenfleisch, gekocht mit aromatischen indischen Gewürzen, frischem Ingwer und Knoblauch, kombiniert mit duftendem Basmatireis und knusprig gebratenen Röstzwiebeln. Serviert mit hausgemachtem Raita für eine perfekte Balance aus Würze und Frische.</p>
+                                                                <div class="card-footer">
+                                                                    <div class="dietary-info">
+                                                                        <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                    </div>
+                                                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                
+                                                        <div class="menu-card" data-id="63">
+                                                            <img src="https://media.istockphoto.com/id/1410130688/photo/mutton-biryani-served-in-a-golden-dish-isolated-on-dark-background-side-view-indian-food.jpg?s=612x612&w=0&k=20&c=ueFrghYZuKAty-rFVe5dtMtNIbn0jaUsSvCUwTVOmd8=" alt="Lamm Biryani" class="card-image">
+                                                            <div class="card-content">
+                                                                <div class="card-header">
+                                                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">63</span>
+                                                                        <h3 class="dish-name">Lamm Biryani</h3>
+                                                                    </div>
+                                                                    <span class="dish-price">17,50€</span>
+                                                                </div>
+                                                                <p class="dish-description">Saftiges Lammfleisch, langsam gegart mit fein abgestimmten indischen Gewürzen, Ingwer und Knoblauch, vermischt mit lockerem Basmatireis und goldbraunen Röstzwiebeln. Dazu wird ein erfrischendes Raita gereicht, das die Aromen harmonisch ergänzt.</p>
+                                                                <div class="card-footer">
+                                                                    <div class="dietary-info">
+                                                                        <i class="fas fa-drumstick-bite" title="Nicht vegetarisch"></i>
+                                                                    </div>
+                                                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                
+                                                        <div class="menu-card" data-id="64">
+                                                            <img src="https://kannanskitchen.com/wp-content/uploads/2021/04/DSC_1079_1.jpg" alt="Vegetarisches Biryani" class="card-image">
+                                                            <div class="card-content">
+                                                                <div class="card-header">
+                                                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">64</span>
+                                                                        <h3 class="dish-name">Vegetarisches Biryani</h3>
+                                                                    </div>
+                                                                    <span class="dish-price">13,50€</span>
+                                                                </div>
+                                                                <p class="dish-description">Eine köstliche Mischung aus gedämpftem Gemüse, verfeinert mit Ingwer, Knoblauch und einer traditionellen indischen Gewürzmischung, sorgfältig geschichtet mit duftendem Basmatireis und Röstzwiebeln. Serviert mit cremigem Raita für ein vollmundiges Geschmackserlebnis.</p>
+                                                                <div class="card-footer">
+                                                                    <div class="dietary-info">
+                                                                        <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                    </div>
+                                                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                
+                                                        <div class="menu-card" data-id="65">
+                                                            <img src="https://www.yummytummyaarthi.com/wp-content/uploads/2014/12/2.-1.jpg" alt="Prawn Biryani" class="card-image">
+                                                            <div class="card-content">
+                                                                <div class="card-header">
+                                                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                        <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">65</span>
+                                                                        <h3 class="dish-name">Prawn Biryani</h3>
+                                                                    </div>
+                                                                    <span class="dish-price">17,90€</span>
+                                                                </div>
+                                                                <p class="dish-description">Zarte, saftig gebratene Garnelen kombiniert mit einer feinen Auswahl an indischen Gewürzen, frischem Ingwer und Knoblauch. Zusammen mit aromatischem Basmatireis und knusprigen Röstzwiebeln ergibt sich ein exquisites, leicht würziges Gericht. Abgerundet mit erfrischendem Raita.</p>
+                                                                <div class="card-footer">
+                                                                    <div class="dietary-info">
+                                                                        <i class="fas fa-fish" title="Nicht vegetarisch"></i>
+                                                                    </div>
+                                                                    <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>                                                      
+                                                <main class="menu-content">
+                                                </main>
+                                            </section>
+                                            <section id="Beilagen" class="menu-section">
+                                                <h2 class="section-title">Beilagen & Saucen</h2>
+                                                <div class="menu-grid">
+                                                    <div class="menu-card" data-id="66">
+                                                        <img src="/api/placeholder/400/320" alt="Boiled Reis" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">66</span>
+                                                                    <h3 class="dish-name">Pappadam</h3>
+                                                                </div>
+                                                                <span class="dish-price">1,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Knusprige Linsenwaffeln, in der indischen Sonne getrocknet und anschließend knusprig frittiert.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="67">
+                                                        <img src="/api/placeholder/400/320" alt="Minzsoße" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">67</span>
+                                                                    <h3 class="dish-name">Minzsoße</h3>
+                                                                </div>
+                                                                <span class="dish-price">2,00€</span>
+                                                            </div>
+                                                            <p class="dish-description">Frische Minze, Joghurt und eine Prise Salz – eine erfrischende Begleitung zu indischen Gerichten.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="68">
+                                                        <img src="/api/placeholder/400/320" alt="Mangosauce" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">68</span>
+                                                                    <h3 class="dish-name">Mangosauce</h3>
+                                                                </div>
+                                                                <span class="dish-price">1,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Eine süß-würzige Sauce mit tropischem Mangoaroma.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="69">
+                                                        <img src="/api/placeholder/400/320" alt="Joghurtsoße" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">69</span>
+                                                                    <h3 class="dish-name">Joghurtsoße</h3>
+                                                                </div>
+                                                                <span class="dish-price">1,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Cremiger Joghurt mit einer würzigen Note – ideal als Dip oder Beilage zu indischen Speisen.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="70">
+                                                        <img src="/api/placeholder/400/320" alt="Tamarindensauce" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">70</span>
+                                                                    <h3 class="dish-name">Tamarindensauce</h3>
+                                                                </div>
+                                                                <span class="dish-price">2,00€</span>
+                                                            </div>
+                                                            <p class="dish-description">Eine harmonische Mischung aus süß und würzig mit fruchtigem Tamarindengeschmack.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <main class="menu-content">
+                                                </main>
+                                            </section>  
+                                            <section id="Salat" class="menu-section">
+                                                <h2 class="section-title">Salat</h2>
+                                                <div class="menu-grid">
+                                                    <div class="menu-card" data-id="71">
+                                                        <img src="/api/placeholder/400/320" alt="Mix-Salat" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">71</span>
+                                                                    <h3 class="dish-name">Mix-Salat</h3>
+                                                                </div>
+                                                                <span class="dish-price">8,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Frischer grüner Salat mit Tomaten, Gurken, Mais, Paprika und Karotten.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="72">
+                                                        <img src="/api/placeholder/400/320" alt="Käse-Salat" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">72</span>
+                                                                    <h3 class="dish-name">Käse-Salat</h3>
+                                                                </div>
+                                                                <span class="dish-price">10,90€</span>
+                                                            </div>
+                                                            <p class="dish-description">Grüner Salat mit Hüttenkäse, Tomaten, Gurken, Mais und Paprika.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="73">
+                                                        <img src="/api/placeholder/400/320" alt="Hähnchen-Salat" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">73</span>
+                                                                    <h3 class="dish-name">Hähnchen-Salat</h3>
+                                                                </div>
+                                                                <span class="dish-price">11,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Grüner Salat mit gebratenen Hähnchenstücken, Gurken, Tomaten, Paprika und einer Prise schwarzem Pfeffer.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-drumstick-bite" title="Fleisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="74">
+                                                        <img src="/api/placeholder/400/320" alt="Garnelen-Salat" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">74</span>
+                                                                    <h3 class="dish-name">Garnelen-Salat</h3>
+                                                                </div>
+                                                                <span class="dish-price">12,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Grüner Salat mit gebratenen Garnelen, Paprika, Gurken, Tomaten und schwarzem Pfeffer.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-fish" title="Fisch/Meeresfrüchte"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="75">
+                                                        <img src="/api/placeholder/400/320" alt="Lachs-Salat" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">75</span>
+                                                                    <h3 class="dish-name">Lachs-Salat</h3>
+                                                                </div>
+                                                                <span class="dish-price">13,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Grüner Salat mit gebratenem Lachs, Tomaten, Gurken, Paprika und einem Spritzer frischer Zitrone.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-fish" title="Fisch/Meeresfrüchte"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <main class="menu-content">
+                                                    </main>
+                                                </section>   
+                                            <section id="Reis" class="menu-section">
+                                                <h2 class="section-title">Reis</h2>
+                                                <div class="menu-grid">
+                                                    <div class="menu-card" data-id="66">
+                                                        <img src="https://www.hungrylankan.com/wp-content/uploads/2024/07/Basmati-Rice-7.jpg" alt="Boiled Reis" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">66</span>
+                                                                    <h3 class="dish-name">Boiled Reis</h3>
+                                                                </div>
+                                                                <span class="dish-price">3,00€</span>
+                                                            </div>
+                                                            <p class="dish-description">Fein duftender, locker gekochter Basmatireis von höchster Qualität. Perfekt als Beilage zu allen indischen Gerichten.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="67">
+                                                        <img src="https://myfoodstory.com/wp-content/uploads/2018/07/Perfect-Jeera-Rice-Indian-Cumin-Rice-4.jpg" alt="Jeera Rice" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">67</span>
+                                                                    <h3 class="dish-name">Jeera Reis</h3>
+                                                                </div>
+                                                                <span class="dish-price">3,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Aromatischer Basmatireis, verfeinert mit gerösteten Kreuzkümmelsamen, die ihm ein einzigartiges, nussiges Aroma verleihen. Eine schmackhafte und leichte Beilage zu würzigen Currys.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="menu-card" data-id="68">
+                                                        <img src="https://www.cookwithmanali.com/wp-content/uploads/2019/04/Matar-Pulao-Peas-Pulao.jpg" alt="Peas Pulao Reis" class="card-image">
+                                                        <div class="card-content">
+                                                            <div class="card-header">
+                                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                                    <span style="background: var(--primary); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">68</span>
+                                                                    <h3 class="dish-name">Peas Pulao Reis</h3>
+                                                                </div>
+                                                                <span class="dish-price">3,50€</span>
+                                                            </div>
+                                                            <p class="dish-description">Zarter Basmatireis, schonend gegart mit frischen grünen Erbsen und geröstetem Kreuzkümmel.</p>
+                                                            <div class="card-footer">
+                                                                <div class="dietary-info">
+                                                                    <i class="fas fa-leaf" title="Vegetarisch"></i>
+                                                                </div>
+                                                                <button class="favorite-btn" aria-label="Als Favorit markieren">🤍</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <main class="menu-content">
+                                                    </main>
+                                                </section>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </section>
+            </main>
+        </div>
+    </main>
+</div>
+
+    <div class="favorites-menu" id="favoritesMenu">
+        ❤️ Favoriten (<span id="favCount">0</span>)
+    </div>
+
+    <div class="favorites-panel" id="favoritesPanel">
+        <div id="favoritesList"></div>
+    </div>
+
+    <button class="scroll-top" id="scrollTop" style="display: none;">
+        ⬆️
+    </button>
+
+    <script>
+        // Initialize favorites
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        const favCount = document.getElementById('favCount');
+        const favoritesMenu = document.getElementById('favoritesMenu');
+        const favoritesPanel = document.getElementById('favoritesPanel');
+        const favoritesList = document.getElementById('favoritesList');
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const body = document.body;
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            body.classList.add('sidebar-open');
+        }
+
+        function closeSidebarMenu() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            body.classList.remove('sidebar-open');
+        }
+
+        hamburgerMenu.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarMenu);
+        overlay.addEventListener('click', closeSidebarMenu);
+
+        // Close sidebar when clicking a category on mobile
+        const categoryLinks = document.querySelectorAll('.category-link');
+        categoryLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeSidebarMenu();
+                }
+            });
+        });
+
+        // Initialize favorite buttons
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            const card = btn.closest('.menu-card');
+            const id = card.dataset.id;
+            
+            // Set initial state
+            if (favorites.includes(id)) {
+                btn.textContent = '❤️';
+            }
+            
+            btn.onclick = function() {
+                if (favorites.includes(id)) {
+                    favorites = favorites.filter(fid => fid !== id);
+                    btn.textContent = '🤍';
+                } else {
+                    favorites.push(id);
+                    btn.textContent = '❤️';
+                }
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                updateFavorites();
+            };
+        });
+
+        // Update favorites panel
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeThreshold = 50;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (swipeDistance > swipeThreshold) {
+                // Right swipe
+                openSidebar();
+            } else if (swipeDistance < -swipeThreshold) {
+                // Left swipe
+                closeSidebarMenu();
+            }
+        }
+        // Toggle favorites panel
+        favoritesMenu.onclick = () => {
+            favoritesPanel.classList.toggle('show');
+        };
+
+        // Scroll to top functionality
+        const scrollTop = document.getElementById('scrollTop');
+
+        window.onscroll = () => {
+            if (window.pageYOffset > 300) {
+                scrollTop.style.display = 'flex';
+            } else {
+                scrollTop.style.display = 'none';
+            }
+        };
+
+        scrollTop.onclick = () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        };
+        
+        function updateFavorites() {
+            favCount.textContent = favorites.length;
+            favoritesList.innerHTML = '';
+            favorites.forEach(id => {
+                const card = document.querySelector(`[data-id="${id}"]`);
+                if (card) {
+                    const name = card.querySelector('.dish-name').textContent;
+                    const price = card.querySelector('.dish-price').textContent;
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'favorite-item';
+                    itemElement.dataset.id = id;
+                    itemElement.innerHTML = `
+                        <div class="delete-bg">Delete</div>
+                        <div class="favorite-item-content">
+                            <strong>${name}</strong>
+                            <div class="price">${price}</div>
+                        </div>
+                    `;
+                    
+                    let touchStartX = 0;
+                    let currentX = 0;
+                    const content = itemElement.querySelector('.favorite-item-content');
+                    
+                    function removeFavoriteItem() {
+                        const height = itemElement.offsetHeight;
+                        itemElement.style.height = `${height}px`;
+                        
+                        // Force a reflow
+                        itemElement.offsetHeight;
+                        
+                        itemElement.classList.add('removing');
+                        
+                        setTimeout(() => {
+                            const cardToUpdate = document.querySelector(`[data-id="${id}"]`);
+                            if (cardToUpdate) {
+                                const favBtn = cardToUpdate.querySelector('.favorite-btn');
+                                favBtn.textContent = '🤍';
+                            }
+                            favorites = favorites.filter(fid => fid !== id);
+                            localStorage.setItem('favorites', JSON.stringify(favorites));
+                            
+                            // Remove the element after animation
+                            setTimeout(() => {
+                                itemElement.remove();
+                                updateFavCount();
+                            }, 300);
+                        }, 50);
+                    }
+
+                    itemElement.addEventListener('touchstart', e => {
+                        touchStartX = e.touches[0].clientX;
+                        currentX = touchStartX;
+                    });
+
+                    itemElement.addEventListener('touchmove', e => {
+                        currentX = e.touches[0].clientX;
+                        const diff = currentX - touchStartX;
+                        if (diff < 0) { // Only allow left swipe
+                            const translate = Math.max(diff, -100);
+                            content.style.transform = `translateX(${translate}px)`;
+                        }
+                    });
+
+                    itemElement.addEventListener('touchend', e => {
+                        const swipeDistance = currentX - touchStartX;
+                        
+                        if (swipeDistance < -50) { // Threshold for deletion
+                            removeFavoriteItem();
+                        } else {
+                            // Reset position if not swiped enough
+                            content.style.transform = '';
+                        }
+                    });
+
+                    favoritesList.appendChild(itemElement);
+                }
+            });
+        }
+
+        // Add this helper function to update just the count
+        function updateFavCount() {
+            favCount.textContent = favorites.length;
+        }
+        // Initial update
+        updateFavorites();
+    </script>
+</body>
+</html>
