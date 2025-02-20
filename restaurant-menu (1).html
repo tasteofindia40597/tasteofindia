@@ -532,6 +532,7 @@
         body.sidebar-open {
             overflow: hidden;
         }
+        
     </style>
 </head>
 <body>
@@ -545,6 +546,121 @@
             <h1 class="logo">Taste of India</h1>
         </div>
     </header>
+
+    <div id="announcement" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    font-family: 'Poppins', sans-serif;">
+    
+    <div style="
+        background: white;
+        width: 94%;
+        max-width: 500px;
+        height: 400px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        margin: 1rem auto;
+        display: flex;
+        flex-direction: column;">
+        
+        <!-- Header - Fixed at top -->
+        <div style="
+            background: linear-gradient(135deg, #8B0000, #4A0404);
+            padding: 1rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 2;">
+            <h2 style="
+                color: white;
+                font-family: 'Playfair Display', serif;
+                font-size: 1.3rem;
+                margin: 0;
+                line-height: 1.4;">Willkommen im digitalen Speisekarten von Taste of India!</h2>
+        </div>
+        
+        <!-- Scrollable Content -->
+        <div style="
+            padding: 1.25rem;
+            background: white;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;">
+            
+            <div style="
+                color: #333;
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 1rem;">
+                In unserer digitalen Speisekarte haben wir auch Bilder der Gerichte hinzugefügt, damit Sie sehen können, wie das Essen ungefähr aussieht. Allerdings gibt es ein kleines Problem: Einige Bilder zeigen nicht exakt unsere Gerichte, da wir nicht für alle Speisen eigene Fotos machen konnten.
+            </div>
+            
+            <div style="
+                color: #333;
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 1rem;">
+                Wir haben jedoch einige echte Bilder aufgenommen und in die Speisekarte eingefügt. Die restlichen Bilder dienen als Beispiel, damit Sie eine Vorstellung davon bekommen, ob ein Gericht mit Curry oder ohne serviert wird oder welche Zutaten und Garnierungen enthalten sein könnten.
+            </div>
+            
+            <div style="
+                color: #333;
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 1rem;">
+                Falls Sie Fragen zu einem Gericht haben, empfehlen wir Ihnen, sich direkt an unseren Koch oder einen unserer Kellner zu wenden. Einige Bilder entsprechen dem tatsächlichen Essen, andere sind nur zur Veranschaulichung. In Zukunft werden wir alle Fotos durch originale Bilder ersetzen.
+            </div>
+            
+            <div style="
+                color: #333;
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 1rem;">
+                Vielen Dank für Ihr Verständnis und viel Freude beim Entdecken unserer Speisen!
+            </div>
+        </div>
+        
+        <!-- Button - Fixed at bottom -->
+        <div style="
+            background: white;
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid #eee;
+            position: sticky;
+            bottom: 0;
+            z-index: 2;">
+            <button onclick="this.parentElement.parentElement.parentElement.style.display='none'" 
+                style="
+                    background: #FFA000;
+                    color: white;
+                    border: none;
+                    width: 100%;
+                    padding: 0.875rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-family: 'Poppins', sans-serif;
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    -webkit-tap-highlight-color: transparent;
+                    box-shadow: 0 4px 12px rgba(255, 160, 0, 0.2);"
+                onmouseover="this.style.background='#FF8C00'"
+                onmouseout="this.style.background='#FFA000'">
+                Schließen
+            </button>
+        </div>
+    </div>
+</div>
 
     <div class="overlay" id="overlay"></div>
 
@@ -569,18 +685,20 @@
                 <a href="#Reis" class="category-link">Reis</a>
                 <a href="#KinderMenu" class="category-link">Kinder Menu</a>
                 <a href="#Nachtisch" class="category-link">Nachtisch</a>
-                <a href="#IndischeGetranke" class="category-link">Indische Getranke</a>
+                <a href="#IndischealkGtrnke" class="category-link">Indische Alkoholische Getränke</a>
                 <a href="#Erfrischungsgetränke" class="category-link">Erfrischungsgetränke</a>
                 <a href="#Wasser" class="category-link">Wasser</a>
                 <a href="#Flaschenbier" class="category-link">Flaschenbier</a>
-                <a href="#Longdrinkes" class="category-link">Longdrinkes</a>
+                <a href="#Longdrinks" class="category-link">Longdrinkes</a>
                 <a href="#Rotwein" class="category-link">Rotwein</a>
-                <a href="#Rosé" class="category-link">Rosé</a>
+                <a href="#Rose" class="category-link">Rosé</a>
                 <a href="#Weisswein" class="category-link">Weisswein</a>
                 <a href="#Spirituosen" class="category-link">Spirituosen</a>
                 <a href="#Fassbier" class="category-link">Fassbier</a>
             </div>
         </nav>  
+
+        
 
         <main class="menu-content">
             <section id="Suppen" class="menu-section">
@@ -2769,7 +2887,7 @@
                                                                 <main class="menu-content">
                                                                 </main>
                                                             </section>  
-                                                            <section id="Erfrischungsgetranke" class="menu-section">
+                                                            <section id="Erfrischungsgetränke" class="menu-section">
                                                                 <h2 class="section-title">Erfrischungsgetränke</h2>
                                                                 <div class="menu-grid">
                                                                     <div class="menu-card" data-id="100">
@@ -3071,8 +3189,8 @@
                                                                             <main class="menu-content">
                                                                             </main>
                                                                         </section>
-                                                                        <section id="IndischeGetranke" class="menu-section">
-                                                                            <h2 class="section-title">Indische Alkohol Getränke</h2>
+                                                                        <section id="IndischealkGtrnke" class="menu-section">
+                                                                            <h2 class="section-title">Indische Alkoholische Getränke</h2>
                                                                             <div class="menu-grid">
                                                                                 <div class="menu-card" data-id="114">
                                                                                     <img src="https://www.equentis.com/blog/wp-content/uploads/2024/09/Story-of-Old-Monk-Storytelling-00-01-1-1200x720.jpg" alt="Old Monk Rum" class="card-image">
